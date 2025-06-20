@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dream Stopwatch</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('https://t3.ftcdn.net/jpg/06/48/82/52/360_F_648825223_TBcDqLeHKE8uHkhTJq43YFS3opzTF0KJ.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      text-align: center;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(6px);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #ffffff; 
+    }
+
+    #display {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .buttons button {
+      margin: 5px;
+      padding: 10px 16px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    #start {
+      background-color: #ff4d4d; 
+    }
+
+    #pause {
+      background-color: #ff9933; 
+    }
+
+    #reset {
+      background-color: #33cc33; 
+    }
+
+    #lap {
+      background-color: #3399ff; 
+    }
+
+    .buttons button:hover {
+      transform: scale(1.05);
+    }
+
+    #laps {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+      text-align: left;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    #laps li {
+      margin: 4px 0;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⏱ Stopwatch</h1>
+    <div id="display">00:00:00</div>
+    <div class="buttons">
+      <button id="start">Start</button>
+      <button id="pause">Pause</button>
+      <button id="reset">Reset</button>
+      <button id="lap">Lap</button>
+    </div>
+    <ul id="laps"></ul>
+  </div>
+
+  <script>
+    let startTime, interval;
+    let running = false;
+    let elapsed = 0;
+
+    const display = document.getElementById("display");
+    const startBtn = document.getElementById("start");
+    const pauseBtn = document.getElementById("pause");
+    const resetBtn = document.getElementById("reset");
+    const lapBtn = document.getElementById("lap");
+    const laps = document.getElementById("laps");
+
+    function formatTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+      const seconds = String(totalSeconds % 60).padStart(2, "0");
+      const milliseconds = String(Math.floor((ms % 1000) / 10)).padStart(2, "0");
+      return `${minutes}:${seconds}:${milliseconds}`;
+    }
+
+    function updateTime() {
+      const current = Date.now();
+      const diff = current - startTime + elapsed;
+      display.textContent = formatTime(diff);
+    }
+
+    startBtn.onclick = () => {
+      if (!running) {
+        startTime = Date.now();
+        interval = setInterval(updateTime, 10);
+        running = true;
+      }
+    };
+
+    pauseBtn.onclick = () => {
+      if (running) {
+        clearInterval(interval);
+        elapsed += Date.now() - startTime;
+        running = false;
+      }
+    };
+
+    resetBtn.onclick = () => {
+      clearInterval(interval);
+      display.textContent = "00:00:00";
+      elapsed = 0;
+      running = false;
+      laps.innerHTML = "";
+    };
+
+    lapBtn.onclick = () => {
+      if (running) {
+        const li = document.createElement("li");
+        li.textContent = display.textContent;
+        laps.appendChild(li);
+      }
+    };
+  </script>
+</body>
+</html>
